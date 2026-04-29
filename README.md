@@ -2,9 +2,7 @@
 
 Embeddable local-first database with CRDT sync.
 
-Go library with a thin host daemon (edged). The library provides Open, Put, Get, Watch, Close. The daemon embeds the library, watches files, polls bees, and syncs to delta in the background. edged runs as a launchd service: starts on login, runs forever, restarts on crash. One-time setup, then invisible.
-
-Reads and writes are local SQLite operations. Sync happens in the background when a delta node is reachable. Offline is the default mode, not a degradation.
+Go library. Import edge and embed in your application. Reads and writes are local SQLite operations. Sync happens in the background when a delta node is reachable. Offline is the default mode, not a degradation.
 
 ## Public API
 
@@ -52,10 +50,6 @@ graph LR
 
 ```mermaid
 graph TD
-    subgraph "cmd/edged"
-        MAIN[main.go<br/>launchd service]
-    end
-
     subgraph "Public API"
         EDGE[edge.go<br/>Open, Close]
         STORE[store.go<br/>Put, Get, Watch]
@@ -84,7 +78,6 @@ graph TD
         VC[crdt/vclock]
     end
 
-    MAIN --> EDGE
     EDGE --> STORE
     STORE --> SYN
     STORE --> ING
@@ -102,7 +95,7 @@ graph TD
 
 ```mermaid
 sequenceDiagram
-    participant E as edged (device)
+    participant E as edge (device)
     participant D as delta (homelab)
 
     Note over E: Background timer fires
