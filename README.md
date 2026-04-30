@@ -36,12 +36,6 @@ graph LR
         SM -->|CRDT merge| STORE
     end
 
-    subgraph "Producers"
-        BEES[bees<br/>task history] -->|poll| IM[IngestManager]
-        FILES[~/.claude/<br/>CLAUDE.md, memory] -->|watch| IM
-        IM -->|Put with merge strategy| STORE
-    end
-
     style SQL fill:#0f3460,stroke:#e94560,color:#eee
     style STORE fill:#0f3460,stroke:#e94560,color:#eee
 ```
@@ -65,7 +59,6 @@ graph TD
 
     subgraph "internal/service/"
         SYN[sync.go<br/>background sync lifecycle]
-        ING[ingest.go<br/>context capture from producers]
     end
 
     subgraph "internal/client/ (ports)"
@@ -80,13 +73,10 @@ graph TD
 
     EDGE --> STORE
     STORE --> SYN
-    STORE --> ING
     SYN --> DLT
     SYN --> SES
     SYN --> TRA
     SYN --> PER
-    ING --> ENT
-    ING --> PER
     ENT --> CRDT
     CLK --> VC
 ```
@@ -115,13 +105,11 @@ If sync is interrupted mid-delta, version vectors track what was confirmed. Next
 
 ## Merge Strategies
 
-| Context type | CRDT         | Why                                                 |
-| ------------ | ------------ | --------------------------------------------------- |
-| Preferences  | LWW-Register | Most recent setting wins                            |
-| Corrections  | LWW-Register | Latest correction supersedes                        |
-| Patterns     | OR-Set       | Patterns accumulate, never lost                     |
-| Task history | Append-only  | Events are immutable facts                          |
-| Files (V1)   | LWW per file | Simplest. Concurrent file edits rare across devices |
+| Data type     | CRDT         | Why                                      |
+| ------------- | ------------ | ---------------------------------------- |
+| Settings      | LWW-Register | Most recent value wins                   |
+| Collections   | OR-Set       | Elements accumulate, never lost          |
+| Event history | Append-only  | Events are immutable facts               |
 
 ## Seven Ideals
 
