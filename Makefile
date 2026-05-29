@@ -1,7 +1,10 @@
-.PHONY: build test
+.PHONY: tidy style test
 
-build:
-	go build -o bin/edged ./cmd/edged
+tidy:
+	go mod tidy
+
+style:
+	goimports -l -w $(shell find . -name '*.go' -not -path './proto/*')
 
 test:
 	go test ./...

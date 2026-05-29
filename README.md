@@ -19,27 +19,6 @@ store.Close()
 
 That is the API. If it grows beyond Open, Put, Get, Watch, Close, the abstraction has failed.
 
-## Data Flow
-
-```mermaid
-graph LR
-    subgraph "Local (always available)"
-        APP[Application] -->|Put/Get| STORE[Store]
-        STORE --> SQL[SQLite<br/>entries + version vectors]
-    end
-
-    subgraph "Background (when available)"
-        STORE -->|periodic| SM[SyncManager]
-        SM -->|connect| DELTA[delta node]
-        SM -->|exchange version vectors| DELTA
-        SM -->|send/receive deltas| DELTA
-        SM -->|CRDT merge| STORE
-    end
-
-    style SQL fill:#0f3460,stroke:#e94560,color:#eee
-    style STORE fill:#0f3460,stroke:#e94560,color:#eee
-```
-
 ## Architecture
 
 ```mermaid
@@ -81,6 +60,24 @@ graph TD
     CLK --> VC
 ```
 
+## Data Flow
+
+```mermaid
+graph LR
+    subgraph "Local (always available)"
+        APP[Application] -->|Put/Get| STORE[Store]
+        STORE --> SQL[SQLite<br/>entries + version vectors]
+    end
+
+    subgraph "Background (when available)"
+        STORE -->|periodic| SM[SyncManager]
+        SM -->|connect| DELTA[delta node]
+        SM -->|exchange version vectors| DELTA
+        SM -->|send/receive deltas| DELTA
+        SM -->|CRDT merge| STORE
+    end
+```
+
 ## Sync Session
 
 ```mermaid
@@ -105,11 +102,11 @@ If sync is interrupted mid-delta, version vectors track what was confirmed. Next
 
 ## Merge Strategies
 
-| Data type     | CRDT         | Why                                      |
-| ------------- | ------------ | ---------------------------------------- |
-| Settings      | LWW-Register | Most recent value wins                   |
-| Collections   | OR-Set       | Elements accumulate, never lost          |
-| Event history | Append-only  | Events are immutable facts               |
+| Data type     | CRDT         | Why                             |
+| ------------- | ------------ | ------------------------------- |
+| Settings      | LWW-Register | Most recent value wins          |
+| Collections   | OR-Set       | Elements accumulate, never lost |
+| Event history | Append-only  | Events are immutable facts      |
 
 ## Seven Ideals
 
@@ -127,5 +124,3 @@ If sync is interrupted mid-delta, version vectors track what was confirmed. Next
 
 - **meld**: CRDT types, version vectors, delta-state computation. Must be complete.
 - **delta**: sync relay endpoint. Must have sync handler.
-
-Observability via Telemetry port (OTel).
