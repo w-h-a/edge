@@ -15,7 +15,7 @@ const (
 type SessionEvent int
 
 const (
-	Connect        SessionEvent = iota
+	Connect SessionEvent = iota
 	Connected
 	Negotiated
 	DeltasExchanged
