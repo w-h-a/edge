@@ -119,8 +119,3 @@ If sync is interrupted mid-delta, version vectors track what was confirmed. Next
 | The Long Now           | Data outlives any server or service. No server required to access your data. |
 | Privacy by default     | Data lives on the user's device.                                             |
 | User ownership         | User controls and owns their data.                                           |
-
-## Dependencies
-
-- **meld**: CRDT types, version vectors, delta-state computation. Must be complete.
-- **delta**: sync relay endpoint. Must have sync handler.
