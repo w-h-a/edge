@@ -30,7 +30,7 @@ graph TD
 
     subgraph "internal/domain/"
         ENT[entry.go<br/>context record + CRDT metadata]
-        CLK[clock.go<br/>version vectors]
+        VER[vv.go<br/>version vectors]
         DLT[delta.go<br/>DeltaCompute pure function]
         SES[session.go<br/>sync state machine]
         SCP[scope.go<br/>namespace model]
@@ -46,8 +46,7 @@ graph TD
     end
 
     subgraph "meld (library dependency)"
-        CRDT[crdt/<br/>LWW-Register, OR-Set]
-        VC[crdt/vclock]
+        CRDT[crdt/<br/>LWW-Register, OR-Set, Version Vectors]
     end
 
     EDGE --> STORE
@@ -57,7 +56,7 @@ graph TD
     SYN --> TRA
     SYN --> PER
     ENT --> CRDT
-    CLK --> VC
+    VER --> CRDT
 ```
 
 ## Data Flow
