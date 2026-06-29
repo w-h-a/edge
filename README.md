@@ -42,7 +42,7 @@ graph TD
 
     subgraph "internal/client/ (ports)"
         PER[persister/<br/>local SQLite]
-        TRA[transport/<br/>gRPC to delta]
+        TRA[transport/<br/>http to delta]
     end
 
     subgraph "meld (library dependency)"
